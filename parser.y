@@ -22,13 +22,13 @@ extern FILE* yyin;
 void yyerror(char *s);
 %}
 
-%token IDENTIFICADOR
-%token PI EXPONENCIAL DECIMAL ENTERO
-%token SQR CUR EXP LN LOG SGN INT FIX FRAC ROUND
+%token IDENTIFICADOR PI EXPONENCIAL DECIMAL ENTERO
+%token F_SQR F_CUR F_EXP F_LN F_LOG F_SGN F_INT F_FIX F_FRAC F_ROUND
 %token O_SUMA O_RESTA O_MULT O_DIV O_DIVE O_FACT O_MOD
 %token O_EXP O_ABS O_PIZQ O_PDER O_IGUAL O_ERR
+%token EOL
 
-%left O_SUMA O_RESTA O_EXP O_IGUAL
+%left O_SUMA O_RESTA O_EXP O_IGUAL O_MOD
 %left O_MULT O_DIV O_DIVE
 %right O_FACT
 
@@ -38,71 +38,48 @@ calculo:
     /* empty */ | calculo linea
 ;
 linea:
-    expresion
+    EOL |
+    expresion EOL |
+    asignacion EOL
 ;
-operando:
-    ENTERO | DECIMAL | EXPONENCIAL | PI | IDENTIFICADOR
+operador_l1:
+    O_SUMA | O_RESTA
 ;
-expresion:
-    expresion_simple O_SUMA expresion |
-    expresion_simple O_RESTA expresion |
-    expresion_simple O_MULT expresion |
-    expresion_simple O_DIV expresion |
-    expresion_simple O_DIVE expresion |
-    expresion_simple O_MOD expresion |
-    expresion_simple O_EXP expresion |
-    O_PIZQ expresion_simple O_PDER
+operador_l2:
+    O_MULT | O_DIV | O_DIVE | O_MOD
 ;
-expresion_simple:
-    operando |
-    operando O_SUMA operando |
-    operando O_RESTA operando |
-    operando O_MULT operando |
-    operando O_DIV operando |
-    operando O_DIVE operando |
-    operando O_MOD operando |
-    operando O_EXP operando |
-    O_PIZQ operando O_PDER
-;
-/*expresion:
-    expresion_l1 | expresion_l2 | expresion_l3 | expresion_l4
-;
-factorial:
-    '!' ENTERO
-;
-vabsoluto:
-    '|' expresion '|'
+func_name:
+    F_SQR | F_CUR | F_EXP | F_LN | F_LOG | F_SGN | F_INT | F_FIX | F_FRAC | F_ROUND
 ;
 funcion:
-    SQR | CUR | EXP | LN | LOG | SGN | INT | FIX | FRAC | ROUND
+    func_name O_PIZQ expresion O_PDER |
+    O_ABS expresion O_ABS
 ;
-exprfunc:
-    funcion '(' expresion ')'
+op_unidad:
+    IDENTIFICADOR | ENTERO | DECIMAL | EXPONENCIAL | PI
+;
+factorial:
+    O_FACT op_unidad |
+    O_FACT funcion |
+    O_FACT O_PIZQ expresion O_PDER
 ;
 operando:
-    ENTERO | DECIMAL | EXPONENCIAL | PI | IDENTIFICADOR |
-    factorial | vabsoluto | exprfunc | expresion
+    op_unidad | funcion | factorial
 ;
-expresion_l1:
-    operando '+' operando |
-    operando '-' operando
+expresion_rama:
+    O_PIZQ expresion O_PDER | operando
 ;
-expresion_l2:
-    operando 'x' operando |
-    operando '/' operando |
-    operando ':' operando |
-    operando MOD operando
+expresion:
+    operando |
+    O_PIZQ expresion O_PDER |
+    expresion_rama operador_l1 expresion |
+    expresion_rama operador_l2 expresion |
+    expresion_rama O_EXP expresion
 ;
-expresion_l3:
-    operando '^' operando
+asignacion:
+    IDENTIFICADOR O_IGUAL expresion |
+    IDENTIFICADOR O_PIZQ IDENTIFICADOR O_PDER O_IGUAL expresion
 ;
-expresion_l4:
-    '(' expresion ')'
-;*/
-/*asignacion:
-    IDENTIFICADOR '=' expresion |
-    IDENTIFICADOR '(' IDENTIFICADOR ')' '=' expresion
-;*/
 
 %%
 
@@ -125,17 +102,16 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // yyin = fopen(argv[1], "r");
-    // if(yyin == NULL){
-    //     printf("Error: El archivo no existe.\n");
-    //     return 1;
-    // }
+    yyin = fopen(argv[1], "r");
+    if(yyin == NULL){
+        printf("Error: El archivo no existe.\n");
+        return 1;
+    }
 
-	yyin = stdin;
 	do {
 		yyparse();
 	} while(!feof(yyin));
 
-    // fclose(yyin);
+    fclose(yyin);
     return 0;
 };
