@@ -1,13 +1,17 @@
-all: calc
+program_exe = calc
+bison_filename = parser
+flex_file = lex.l
 
-parser.tab.c parser.tab.h:	parser.y
-	bison -t -v -d parser.y
+all: $(program_exe)
 
-lex.yy.c: lex.l parser.tab.h
-	flex lex.l
+$(bison_filename).tab.c $(bison_filename).tab.h: $(bison_filename).y
+	bison -t -v -d $(bison_filename).y
 
-calc: lex.yy.c parser.tab.c parser.tab.h
-	gcc -o calc parser.tab.c lex.yy.c
+lex.yy.c: $(flex_file) $(bison_filename).tab.h
+	flex $(flex_file)
+
+$(program_exe): lex.yy.c $(bison_filename).tab.c $(bison_filename).tab.h
+	gcc -o $(program_exe) $(bison_filename).tab.c lex.yy.c
 
 clean:
-	rm calc parser.tab.c lex.yy.c parser.tab.h parser.output
+	rm $(program_exe) $(bison_filename).tab.c lex.yy.c $(bison_filename).tab.h $(bison_filename).output
