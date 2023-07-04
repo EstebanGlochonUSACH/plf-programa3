@@ -1,0 +1,10 @@
+func(X) = (X x PI) / 2
+g(C:D) = (C + 3EXP5 + 5MOD2) / D
+SQR(5 x Y) - Y = Y
+X = LOG(4)
+= CUR(5:6) - LN(7) + func(INT(5,2))
+Var1 = 5 + 7
+VAR22B = Var1 x 3 + Var1 - 2
+var3 = Var1 + SGN(VAR22B) + func(3)
+= (FIX(5) / ROUND(5,7))
+h(Y) = FRAC(3:6) - LN(Y)
