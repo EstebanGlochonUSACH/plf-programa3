@@ -8,7 +8,7 @@ Crear un analizador lexico, utilizando Flex (Fast Lexical Analyzer Generator) e 
 
 ---
 
-## Ejemplo:
+## Ejemplos de referencia:
 
-https://github.com/meyerd/flex-bison-example/blob/master/calc.l
-https://github.com/meyerd/flex-bison-example/blob/master/calc.y
+* https://github.com/meyerd/flex-bison-example/blob/master/calc.l
+* https://github.com/meyerd/flex-bison-example/blob/master/calc.y
