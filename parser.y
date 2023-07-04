@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define YYERROR_VERBOSE 1
+
 #include <unistd.h>
 #ifdef WIN32
 #include <io.h>
@@ -19,14 +21,14 @@ extern int yylineno;
 extern int yylex();
 extern int yyparse();
 extern FILE* yyin;
-void yyerror(char *s);
+void yyerror(const char *s);
 %}
 
-%token IDENTIFICADOR PI EXPONENCIAL DECIMAL ENTERO
+%token IDENTIFICADOR CONST_PI EXPONENCIAL DECIMAL ENTERO
 %token F_SQR F_CUR F_EXP F_LN F_LOG F_SGN F_INT F_FIX F_FRAC F_ROUND
-%token O_SUMA O_RESTA O_MULT O_DIV O_DIVE O_FACT O_MOD
-%token O_EXP O_ABS O_PIZQ O_PDER O_IGUAL O_ERR
-%token EOL
+%token O_SUMA O_RESTA O_MULT O_DIV O_DIVE O_FACT O_MOD O_EXP
+%token O_ABS O_PIZQ O_PDER O_IGUAL O_ERR
+%token FIN_LINEA
 
 %left O_SUMA O_RESTA O_EXP O_IGUAL O_MOD
 %left O_MULT O_DIV O_DIVE
@@ -34,13 +36,13 @@ void yyerror(char *s);
 
 %%
 
-calculo:
-    /* empty */ | calculo linea
+calcular:
+    /* empty */ | calcular linea
 ;
 linea:
-    EOL |
-    expresion EOL |
-    asignacion EOL
+    FIN_LINEA |
+    expresion FIN_LINEA |
+    asignacion FIN_LINEA
 ;
 operador_l1:
     O_SUMA | O_RESTA
@@ -56,7 +58,7 @@ funcion:
     O_ABS expresion O_ABS
 ;
 op_unidad:
-    IDENTIFICADOR | ENTERO | DECIMAL | EXPONENCIAL | PI
+    IDENTIFICADOR | CONST_PI | ENTERO | DECIMAL | EXPONENCIAL
 ;
 factorial:
     O_FACT op_unidad |
@@ -83,9 +85,10 @@ asignacion:
 
 %%
 
-void yyerror(char *s)
+void yyerror(const char *s)
 {
     printf("Error en la l%cnea n%cumero: %d\n", 161, 163, yylineno);
+    //printf("Error en la l%cnea n%cumero: %d\n%s\n", 161, 163, yylineno, s);
     exit(1);
 }
 
@@ -109,8 +112,9 @@ int main(int argc, char *argv[])
     }
 
 	do {
-		yyparse();
-	} while(!feof(yyin));
+        yyparse();
+    } while(!feof(yyin));
+    printf("\nAn%clisis sint%cctico exitoso.\n", 160, 160);
 
     fclose(yyin);
     return 0;

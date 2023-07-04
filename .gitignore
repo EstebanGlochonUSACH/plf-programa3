@@ -2,3 +2,5 @@ calc
 lex.yy.c
 parser.output
 parser.tab.*
+y.output
+y.tab.*
